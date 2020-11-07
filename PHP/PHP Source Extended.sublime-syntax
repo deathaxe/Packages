@@ -1,0 +1,53 @@
+%YAML 1.2
+---
+name: PHP Source
+scope: source.php
+hidden: true
+version: 2
+
+extends: Packages/PHP/PHP Source.sublime-syntax
+
+contexts:
+
+  support-classes:
+    - meta_append: true
+    - include: php-builtin-classes
+    - include: php-ext-apache-classes
+    - include: php-ext-apc-classes
+
+  support-constants:
+    - meta_append: true
+    - include: php-builtin-constants
+    - include: php-ext-apache-constants
+    - include: php-ext-apc-constants
+
+  support-functions:
+    - meta_append: true
+    - include: php-builtin-functions
+    - include: php-ext-apache-functions
+    - include: php-ext-apc-functions
+
+###[ BUILTIN ]#################################################################
+
+  php-builtin-classes: []
+
+  php-builtin-constants: []
+
+  php-builtin-functions: []
+
+
+###[ APACHE ]##################################################################
+
+  php-ext-apache-classes: []
+
+  php-ext-apache-constants: []
+
+  php-ext-apache-functions: []
+
+###[ APC ]#####################################################################
+
+  php-ext-apc-classes: []
+
+  php-ext-apc-constants: []
+
+  php-ext-apc-functions: []

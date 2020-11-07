@@ -3,7 +3,7 @@
 name: PHP Source
 hidden: true
 version: 2
-scope: source.php
+scope: source.php.basic
 variables:
   identifier_start: '[[:alpha:]_]'
   identifier: '\b{{identifier_start}}[[:alnum:]_]*\b'
@@ -358,7 +358,7 @@ contexts:
               object | string | false | null | void | parent | self | static | mixed
             )\b
           scope: storage.type.php
-        - include: class-builtin
+        - include: support-classes
         - include: identifier-parts-as-path
         - match: '(\\)?({{identifier}})(?!\\)'
           scope: meta.path.php
@@ -394,10 +394,6 @@ contexts:
           pop: 1
         - match: ','
           scope: punctuation.separator.php
-
-  class-builtin:
-    - include: scope:source.php.builtin#class
-    - include: ext-classes
 
   use-statement:
     - match: (?i)\b(use)\b\s*
@@ -556,7 +552,7 @@ contexts:
           set:
             - meta_scope: meta.path.php
             - meta_content_scope: entity.other.inherited-class.php
-            - include: class-builtin
+            - include: support-classes
             - include: identifier-parts
             - match: '(\\)?{{identifier}}(?!\\)'
               captures:
@@ -575,7 +571,7 @@ contexts:
           push:
             - meta_scope: meta.path.php
             - meta_content_scope: entity.other.inherited-class.php
-            - include: class-builtin
+            - include: support-classes
             - include: identifier-parts
             - match: '(\\)?{{identifier}}(?!\\)'
               captures:
@@ -614,7 +610,7 @@ contexts:
               scope: keyword.other.use-as.php
             - match: \b(insteadof)\b
               scope: keyword.other.insteadof.php
-            - include: class-builtin
+            - include: support-classes
             - match: '::'
               scope: punctuation.accessor.double-colon.php
             - match: (?={{path}})
@@ -628,7 +624,7 @@ contexts:
                   pop: 1
         - include: attributes
         - include: comments
-        - include: class-builtin
+        - include: support-classes
         - match: (?={{path}})
           push:
             - meta_scope: meta.path.php entity.other.inherited-class.php
@@ -843,7 +839,7 @@ contexts:
     - match: '(?={{path}})'
       push:
         - meta_scope: meta.path.php
-        - include: class-builtin
+        - include: support-classes
         - include: identifier-parts
         - match: '(\\)?({{identifier}})(?!\\)'
           captures:
@@ -914,8 +910,7 @@ contexts:
       push:
         - match: '(?=[^\\_[:alnum:]])'
           pop: 1
-        - include: scope:source.php.builtin#constant
-        - include: ext-constants
+        - include: support-constants
         # In PHP, any identifier which is not a variable is taken to be a constant.
         # However, if there is no constant defined with the given name then a notice
         # is generated and the constant is assumed to have the value of its name.
@@ -941,9 +936,7 @@ contexts:
         - meta_scope: meta.function-call.php
         - match: (?=\s*\()
           set: function-call-parameters
-        - match: (?i)\b(isset|unset|e(val|mpty)|list)\b
-          scope: support.function.construct.php
-        - include: support
+        - include: support-functions
         - match: '{{identifier}}'
           scope: variable.function.php
   function-call-static:
@@ -1495,10 +1488,6 @@ contexts:
         - regex-single-quoted-branch
         - string-single-quoted-branch
 
-  support:
-    - include: scope:source.php.builtin#function
-    - include: ext-functions
-
   variables:
     - match: (\$)((_(COOKIE|FILES|GET|POST|REQUEST))|arg(v|c))\b
       scope: variable.other.global.php
@@ -1567,254 +1556,10 @@ contexts:
         - match: ''
           pop: 1
 
-  ext-classes:
-    - include: scope:source.php.ext.apache#class
-    - include: scope:source.php.ext.apc#class
-    - include: scope:source.php.ext.array#class
-    - include: scope:source.php.ext.bcmath#class
-    - include: scope:source.php.ext.bz2#class
-    - include: scope:source.php.ext.calendar#class
-    - include: scope:source.php.ext.com#class
-    - include: scope:source.php.ext.csprng#class
-    - include: scope:source.php.ext.ctype#class
-    - include: scope:source.php.ext.curl#class
-    - include: scope:source.php.ext.dba#class
-    - include: scope:source.php.ext.dbx#class
-    - include: scope:source.php.ext.dir#class
-    - include: scope:source.php.ext.domxml#class
-    - include: scope:source.php.ext.dotnet#class
-    - include: scope:source.php.ext.enchant#class
-    - include: scope:source.php.ext.ereg#class
-    - include: scope:source.php.ext.exif#class
-    - include: scope:source.php.ext.fileinfo#class
-    - include: scope:source.php.ext.filesystem#class
-    - include: scope:source.php.ext.filter#class
-    - include: scope:source.php.ext.ftp#class
-    - include: scope:source.php.ext.gettext#class
-    - include: scope:source.php.ext.gmp#class
-    - include: scope:source.php.ext.hash#class
-    - include: scope:source.php.ext.http#class
-    - include: scope:source.php.ext.iconv#class
-    - include: scope:source.php.ext.iisfunc#class
-    - include: scope:source.php.ext.image#class
-    - include: scope:source.php.ext.imap#class
-    - include: scope:source.php.ext.interbase#class
-    - include: scope:source.php.ext.intl#class
-    - include: scope:source.php.ext.json#class
-    - include: scope:source.php.ext.ldap#class
-    - include: scope:source.php.ext.mail#class
-    - include: scope:source.php.ext.math#class
-    - include: scope:source.php.ext.mbstring#class
-    - include: scope:source.php.ext.mcrypt#class
-    - include: scope:source.php.ext.mhash#class
-    - include: scope:source.php.ext.mongo#class
-    - include: scope:source.php.ext.mssql#class
-    - include: scope:source.php.ext.mysql#class
-    - include: scope:source.php.ext.mysqli#class
-    - include: scope:source.php.ext.mysqlnd#class
-    - include: scope:source.php.ext.network#class
-    - include: scope:source.php.ext.nsapi#class
-    - include: scope:source.php.ext.oci8#class
-    - include: scope:source.php.ext.odbc#class
-    - include: scope:source.php.ext.openssl#class
-    - include: scope:source.php.ext.pcntl#class
-    - include: scope:source.php.ext.pcre#class
-    - include: scope:source.php.ext.pgsql#class
-    - include: scope:source.php.ext.posix#class
-    - include: scope:source.php.ext.proctitle#class
-    - include: scope:source.php.ext.pspell#class
-    - include: scope:source.php.ext.readline#class
-    - include: scope:source.php.ext.recode#class
-    - include: scope:source.php.ext.rrd#class
-    - include: scope:source.php.ext.sem#class
-    - include: scope:source.php.ext.session#class
-    - include: scope:source.php.ext.shmop#class
-    - include: scope:source.php.ext.simplexml#class
-    - include: scope:source.php.ext.snmp#class
-    - include: scope:source.php.ext.soap#class
-    - include: scope:source.php.ext.sockets#class
-    - include: scope:source.php.ext.spl#class
-    - include: scope:source.php.ext.sqlite#class
-    - include: scope:source.php.ext.stats#class
-    - include: scope:source.php.ext.stream#class
-    - include: scope:source.php.ext.string#class
-    - include: scope:source.php.ext.sybase#class
-    - include: scope:source.php.ext.tidy#class
-    - include: scope:source.php.ext.tokenizer#class
-    - include: scope:source.php.ext.url#class
-    - include: scope:source.php.ext.wddx#class
-    - include: scope:source.php.ext.xhprof#class
-    - include: scope:source.php.ext.xml#class
-    - include: scope:source.php.ext.xmlrpc#class
-    - include: scope:source.php.ext.xmlwriter#class
-    - include: scope:source.php.ext.xslt#class
-    - include: scope:source.php.ext.zip#class
-    - include: scope:source.php.ext.zlib#class
+  support-classes: []
 
-  ext-constants:
-    - include: scope:source.php.ext.apache#constant
-    - include: scope:source.php.ext.apc#constant
-    - include: scope:source.php.ext.array#constant
-    - include: scope:source.php.ext.bcmath#constant
-    - include: scope:source.php.ext.bz2#constant
-    - include: scope:source.php.ext.calendar#constant
-    - include: scope:source.php.ext.com#constant
-    - include: scope:source.php.ext.csprng#constant
-    - include: scope:source.php.ext.ctype#constant
-    - include: scope:source.php.ext.curl#constant
-    - include: scope:source.php.ext.dba#constant
-    - include: scope:source.php.ext.dbx#constant
-    - include: scope:source.php.ext.dir#constant
-    - include: scope:source.php.ext.domxml#constant
-    - include: scope:source.php.ext.dotnet#constant
-    - include: scope:source.php.ext.enchant#constant
-    - include: scope:source.php.ext.ereg#constant
-    - include: scope:source.php.ext.exif#constant
-    - include: scope:source.php.ext.fileinfo#constant
-    - include: scope:source.php.ext.filesystem#constant
-    - include: scope:source.php.ext.filter#constant
-    - include: scope:source.php.ext.ftp#constant
-    - include: scope:source.php.ext.gettext#constant
-    - include: scope:source.php.ext.gmp#constant
-    - include: scope:source.php.ext.hash#constant
-    - include: scope:source.php.ext.http#constant
-    - include: scope:source.php.ext.iconv#constant
-    - include: scope:source.php.ext.iisfunc#constant
-    - include: scope:source.php.ext.image#constant
-    - include: scope:source.php.ext.imap#constant
-    - include: scope:source.php.ext.interbase#constant
-    - include: scope:source.php.ext.intl#constant
-    - include: scope:source.php.ext.json#constant
-    - include: scope:source.php.ext.ldap#constant
-    - include: scope:source.php.ext.mail#constant
-    - include: scope:source.php.ext.math#constant
-    - include: scope:source.php.ext.mbstring#constant
-    - include: scope:source.php.ext.mcrypt#constant
-    - include: scope:source.php.ext.mhash#constant
-    - include: scope:source.php.ext.mongo#constant
-    - include: scope:source.php.ext.mssql#constant
-    - include: scope:source.php.ext.mysql#constant
-    - include: scope:source.php.ext.mysqli#constant
-    - include: scope:source.php.ext.mysqlnd#constant
-    - include: scope:source.php.ext.network#constant
-    - include: scope:source.php.ext.nsapi#constant
-    - include: scope:source.php.ext.oci8#constant
-    - include: scope:source.php.ext.odbc#constant
-    - include: scope:source.php.ext.openssl#constant
-    - include: scope:source.php.ext.pcntl#constant
-    - include: scope:source.php.ext.pcre#constant
-    - include: scope:source.php.ext.pgsql#constant
-    - include: scope:source.php.ext.posix#constant
-    - include: scope:source.php.ext.proctitle#constant
-    - include: scope:source.php.ext.pspell#constant
-    - include: scope:source.php.ext.readline#constant
-    - include: scope:source.php.ext.recode#constant
-    - include: scope:source.php.ext.rrd#constant
-    - include: scope:source.php.ext.sem#constant
-    - include: scope:source.php.ext.session#constant
-    - include: scope:source.php.ext.shmop#constant
-    - include: scope:source.php.ext.simplexml#constant
-    - include: scope:source.php.ext.snmp#constant
-    - include: scope:source.php.ext.soap#constant
-    - include: scope:source.php.ext.sockets#constant
-    - include: scope:source.php.ext.spl#constant
-    - include: scope:source.php.ext.sqlite#constant
-    - include: scope:source.php.ext.stats#constant
-    - include: scope:source.php.ext.stream#constant
-    - include: scope:source.php.ext.string#constant
-    - include: scope:source.php.ext.sybase#constant
-    - include: scope:source.php.ext.tidy#constant
-    - include: scope:source.php.ext.tokenizer#constant
-    - include: scope:source.php.ext.url#constant
-    - include: scope:source.php.ext.wddx#constant
-    - include: scope:source.php.ext.xhprof#constant
-    - include: scope:source.php.ext.xml#constant
-    - include: scope:source.php.ext.xmlrpc#constant
-    - include: scope:source.php.ext.xmlwriter#constant
-    - include: scope:source.php.ext.xslt#constant
-    - include: scope:source.php.ext.zip#constant
-    - include: scope:source.php.ext.zlib#constant
+  support-constants: []
 
-  ext-functions:
-    - include: scope:source.php.ext.apache#function
-    - include: scope:source.php.ext.apc#function
-    - include: scope:source.php.ext.array#function
-    - include: scope:source.php.ext.bcmath#function
-    - include: scope:source.php.ext.bz2#function
-    - include: scope:source.php.ext.calendar#function
-    - include: scope:source.php.ext.com#function
-    - include: scope:source.php.ext.csprng#function
-    - include: scope:source.php.ext.ctype#function
-    - include: scope:source.php.ext.curl#function
-    - include: scope:source.php.ext.dba#function
-    - include: scope:source.php.ext.dbx#function
-    - include: scope:source.php.ext.dir#function
-    - include: scope:source.php.ext.domxml#function
-    - include: scope:source.php.ext.dotnet#function
-    - include: scope:source.php.ext.enchant#function
-    - include: scope:source.php.ext.ereg#function
-    - include: scope:source.php.ext.exif#function
-    - include: scope:source.php.ext.fileinfo#function
-    - include: scope:source.php.ext.filesystem#function
-    - include: scope:source.php.ext.filter#function
-    - include: scope:source.php.ext.ftp#function
-    - include: scope:source.php.ext.gettext#function
-    - include: scope:source.php.ext.gmp#function
-    - include: scope:source.php.ext.hash#function
-    - include: scope:source.php.ext.http#function
-    - include: scope:source.php.ext.iconv#function
-    - include: scope:source.php.ext.iisfunc#function
-    - include: scope:source.php.ext.image#function
-    - include: scope:source.php.ext.imap#function
-    - include: scope:source.php.ext.interbase#function
-    - include: scope:source.php.ext.intl#function
-    - include: scope:source.php.ext.json#function
-    - include: scope:source.php.ext.ldap#function
-    - include: scope:source.php.ext.mail#function
-    - include: scope:source.php.ext.math#function
-    - include: scope:source.php.ext.mbstring#function
-    - include: scope:source.php.ext.mcrypt#function
-    - include: scope:source.php.ext.mhash#function
-    - include: scope:source.php.ext.mongo#function
-    - include: scope:source.php.ext.mssql#function
-    - include: scope:source.php.ext.mysql#function
-    - include: scope:source.php.ext.mysqli#function
-    - include: scope:source.php.ext.mysqlnd#function
-    - include: scope:source.php.ext.network#function
-    - include: scope:source.php.ext.nsapi#function
-    - include: scope:source.php.ext.oci8#function
-    - include: scope:source.php.ext.odbc#function
-    - include: scope:source.php.ext.openssl#function
-    - include: scope:source.php.ext.pcntl#function
-    - include: scope:source.php.ext.pcre#function
-    - include: scope:source.php.ext.pgsql#function
-    - include: scope:source.php.ext.posix#function
-    - include: scope:source.php.ext.proctitle#function
-    - include: scope:source.php.ext.pspell#function
-    - include: scope:source.php.ext.readline#function
-    - include: scope:source.php.ext.recode#function
-    - include: scope:source.php.ext.rrd#function
-    - include: scope:source.php.ext.sem#function
-    - include: scope:source.php.ext.session#function
-    - include: scope:source.php.ext.shmop#function
-    - include: scope:source.php.ext.simplexml#function
-    - include: scope:source.php.ext.snmp#function
-    - include: scope:source.php.ext.soap#function
-    - include: scope:source.php.ext.sockets#function
-    - include: scope:source.php.ext.spl#function
-    - include: scope:source.php.ext.sqlite#function
-    - include: scope:source.php.ext.stats#function
-    - include: scope:source.php.ext.stream#function
-    - include: scope:source.php.ext.string#function
-    - include: scope:source.php.ext.sybase#function
-    - include: scope:source.php.ext.tidy#function
-    - include: scope:source.php.ext.tokenizer#function
-    - include: scope:source.php.ext.url#function
-    - include: scope:source.php.ext.wddx#function
-    - include: scope:source.php.ext.xhprof#function
-    - include: scope:source.php.ext.xml#function
-    - include: scope:source.php.ext.xmlrpc#function
-    - include: scope:source.php.ext.xmlwriter#function
-    - include: scope:source.php.ext.xslt#function
-    - include: scope:source.php.ext.zip#function
-    - include: scope:source.php.ext.zlib#function
+  support-functions:
+    - match: (?i)\b(isset|unset|e(val|mpty)|list)\b
+      scope: support.function.construct.php
